@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>備料站 · 取樣備料</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #00e5a0;
+    --accent-dim: rgba(0,229,160,0.12);
+    --warn: #ff6b35;
+    --warn-dim: rgba(255,107,53,0.12);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --done-bg: #0d2218;
+    --done-border: #1a4a30;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .logo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:.4; }
+  }
+  header h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  header .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── Main ── */
+  main { padding: 24px; max-width: 900px; margin: 0 auto; }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* ── Cards ── */
+  .card-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card.done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+    opacity: .7;
+  }
+  .card.done:hover { border-color: var(--done-border); }
+
+  .card-info { display: flex; flex-direction: column; gap: 6px; }
+
+  .card-top { display: flex; align-items: center; gap: 10px; }
+  .item-code {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .item-name { font-size: 15px; font-weight: 500; }
+
+  .card-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .meta-chip {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .meta-chip .label { color: var(--muted); }
+  .meta-chip .value { color: var(--text); }
+
+  .wo-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: var(--text);
+  }
+  .wo-chip.empty { color: var(--muted); font-style: italic; }
+
+  .badge-done {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* ── Button ── */
+  .btn-done {
+    background: var(--accent);
+    color: #0f1117;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .1s, box-shadow .2s;
+  }
+  .btn-done:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,229,160,.3);
+  }
+  .btn-done:active { transform: translateY(0); }
+
+  /* ── Filter tabs ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: transparent;
+    transition: all .2s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .tab.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+  /* ── Loading ── */
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+  .spinner {
+    width: 24px; height: 24px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--accent);
+    color: #0f1117;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all .3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.error { background: var(--warn); }
+
+  .done-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-dot"></div>
+  <h1>取樣備料站</h1>
+  <span class="subtitle" id="clock">--:--:--</span>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" onclick="setFilter('pending')">待備料 <span id="cnt-pending"></span></button>
+    <button class="tab" onclick="setFilter('done')">已完成 <span id="cnt-done"></span></button>
+    <button class="tab" onclick="setFilter('all')">全部</button>
+  </div>
+
+  <p class="section-title" id="list-label">待備料清單</p>
+  <div id="list" class="card-list">
+    <div class="loading"><div class="spinner"></div>載入中…</div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  ⚠️  請填入你的 Supabase 設定
+// ══════════════════════════════════════════════
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const TABLE = 'lab_samples';
+// ══════════════════════════════════════════════
+
+let currentFilter = 'pending';
+let allData = [];
+
+// ── API helpers ──
+async function apiFetch(method, path, body) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.status === 204 ? null : res.json();
+}
+
+async function loadData() {
+  try {
+    const data = await apiFetch('GET', `${TABLE}?order=created_at.desc&select=*`);
+    allData = data;
+    renderList();
+  } catch(e) {
+    document.getElementById('list').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>載入失敗，請確認 Supabase 設定</div>`;
+  }
+}
+
+// ── Render ──
+function renderList() {
+  const filtered = allData.filter(r => {
+    if (currentFilter === 'pending') return r.status === 'pending';
+    if (currentFilter === 'done') return r.status === 'done';
+    return true;
+  });
+
+  const pending = allData.filter(r => r.status === 'pending').length;
+  const done = allData.filter(r => r.status === 'done').length;
+  document.getElementById('cnt-pending').textContent = pending ? `(${pending})` : '';
+  document.getElementById('cnt-done').textContent = done ? `(${done})` : '';
+
+  const labels = { pending:'待備料清單', done:'已完成清單', all:'全部清單' };
+  document.getElementById('list-label').textContent = labels[currentFilter];
+
+  if (!filtered.length) {
+    document.getElementById('list').innerHTML = `<div class="empty"><div class="empty-icon">${currentFilter==='pending'?'✅':'📋'}</div>${currentFilter==='pending'?'目前沒有待備料項目':'沒有記錄'}</div>`;
+    return;
+  }
+
+  document.getElementById('list').innerHTML = filtered.map(r => cardHTML(r)).join('');
+}
+
+function cardHTML(r) {
+  const isDone = r.status === 'done';
+  const wo = r.work_order ? `<span class="wo-chip">工單 ${r.work_order}</span>` : `<span class="wo-chip empty">無對應工單</span>`;
+  const doneTime = r.done_at ? `<span class="done-time">完成：${formatTime(r.done_at)}</span>` : '';
+  const action = isDone
+    ? `<span class="badge-done">✓ 已完成</span>`
+    : `<button class="btn-done" onclick="markDone('${r.id}')">完成備料</button>`;
+
+  return `
+  <div class="card ${isDone?'done':''}" id="card-${r.id}">
+    <div class="card-info">
+      <div class="card-top">
+        <span class="item-code">${r.item_code}</span>
+        <span class="item-name">${r.item_name}</span>
+      </div>
+      <div class="card-meta">
+        ${wo}
+        ${doneTime}
+      </div>
+    </div>
+    ${action}
+  </div>`;
+}
+
+function formatTime(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+// ── Actions ──
+async function markDone(id) {
+  const btn = document.querySelector(`#card-${id} .btn-done`);
+  if (btn) { btn.textContent = '處理中…'; btn.disabled = true; }
+  try {
+    await apiFetch('PATCH', `${TABLE}?id=eq.${id}`, {
+      status: 'done',
+      done_at: new Date().toISOString(),
+    });
+    showToast('備料完成！');
+    await loadData();
+  } catch(e) {
+    showToast('操作失敗', true);
+    if (btn) { btn.textContent = '完成備料'; btn.disabled = false; }
+  }
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['pending','done','all'][i] === f);
+  });
+  renderList();
+}
+
+// ── Toast ──
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = '', 2500);
+}
+
+// ── Clock ──
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('zh-TW');
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Auto refresh every 30s ──
+setInterval(loadData, 30000);
+
+loadData();
+</script>
+</body>
+</html>
