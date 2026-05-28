@@ -83,7 +83,7 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 9px 14px;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
@@ -98,9 +98,9 @@
   }
   .card.done:hover { border-color: var(--done-border); }
 
-  .card-info { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .card-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 
-  .card-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .card-top { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
   .item-code {
     font-family: 'Space Mono', monospace;
     font-size: 13px;
@@ -157,7 +157,7 @@
     color: #0f1117;
     border: none;
     border-radius: 6px;
-    padding: 9px 18px;
+    padding: 8px 16px;
     font-family: 'Space Mono', monospace;
     font-size: 13px;
     font-weight: 700;
@@ -336,7 +336,7 @@ function renderList() {
 function cardHTML(r) {
   const isDone = r.status === 'done';
   const wo = r.work_order ? `<span class="wo-chip">工單 ${r.work_order}</span>` : `<span class="wo-chip empty">無對應工單</span>`;
-  const doneTime = r.done_at ? `<span class="done-time">完成：${formatTime(r.done_at)}</span>` : '';
+  const doneTime = r.done_at ? `<div class="card-meta"><span class="done-time">完成：${formatTime(r.done_at)}</span></div>` : '';
   const action = isDone
     ? `<span class="badge-done">✓ 已完成</span>`
     : `<button class="btn-done" onclick="markDone('${r.id}')">完成備料</button>`;
@@ -347,11 +347,9 @@ function cardHTML(r) {
       <div class="card-top">
         <span class="item-code">${r.item_code}</span>
         <span class="item-name">${r.item_name}</span>
-      </div>
-      <div class="card-meta">
         ${wo}
-        ${doneTime}
       </div>
+      ${doneTime}
     </div>
     ${action}
   </div>`;
