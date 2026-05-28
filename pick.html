@@ -73,21 +73,22 @@
     letter-spacing: 3px;
     color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   /* ── Cards ── */
-  .card-list { display: flex; flex-direction: column; gap: 8px; }
+  .card-list { display: flex; flex-direction: column; gap: 6px; }
 
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 9px 14px;
+    min-height: 56px;
+    padding: 6px 12px;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     transition: border-color .2s;
   }
   .card:hover { border-color: var(--accent); }
@@ -98,18 +99,18 @@
   }
   .card.done:hover { border-color: var(--done-border); }
 
-  .card-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .card-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
   .card-top { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
   .item-code {
     font-family: 'Space Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--accent);
     background: var(--accent-dim);
     padding: 2px 8px;
     border-radius: 4px;
   }
-  .item-name { font-size: 15px; font-weight: 500; overflow-wrap: anywhere; }
+  .item-name { font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
 
   .card-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
   .meta-chip {
@@ -124,7 +125,7 @@
 
   .wo-chip {
     display: inline;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
     line-height: 1.5;
     white-space: nowrap;
@@ -149,9 +150,9 @@
     color: #0f1117;
     border: none;
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: 7px 14px;
     font-family: 'Space Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
@@ -167,7 +168,7 @@
   .tabs {
     display: flex;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .tab {
     padding: 6px 16px;
