@@ -14,6 +14,12 @@
 └── README.md      # 本說明文件
 ```
 
+## 已部署網址
+
+- [實驗室頁面](https://btohri.github.io/lab-sampling-system/lab.html)
+- [備料頁面](https://btohri.github.io/lab-sampling-system/pick.html)
+- [GitHub 專案](https://github.com/btohri/lab-sampling-system)
+
 ---
 
 ## 系統架構
@@ -55,7 +61,7 @@ create policy "allow all" on lab_samples for all using (true) with check (true);
 
 Supabase 專案頁面 → Settings → API，複製：
 - **Project URL**（格式：`https://xxxxxxxx.supabase.co`）
-- **anon public key**
+- **Publishable key**
 
 ### Step 3：填入兩個 HTML 檔案
 
@@ -63,7 +69,7 @@ Supabase 專案頁面 → Settings → API，複製：
 
 ```js
 const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';  // ← 替換
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';                // ← 替換
+const SUPABASE_ANON_KEY = 'YOUR_PUBLISHABLE_KEY';         // ← 替換
 ```
 
 ### Step 4：推上 GitHub Pages
@@ -72,15 +78,15 @@ const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';                // ← 替換
 git init
 git add .
 git commit -m "init"
-git remote add origin https://github.com/你的帳號/repo名稱.git
+git remote add origin https://github.com/btohri/lab-sampling-system.git
 git push -u origin main
 ```
 
-GitHub repo → Settings → Pages → Branch: `main` → Save
+[GitHub repo](https://github.com/btohri/lab-sampling-system) → Settings → Pages → Branch: `main` → Save
 
 部署完成後取得兩個網址分發給對應人員：
-- `https://你的帳號.github.io/repo名稱/lab.html`（實驗室）
-- `https://你的帳號.github.io/repo名稱/pick.html`（備料）
+- [https://btohri.github.io/lab-sampling-system/lab.html](https://btohri.github.io/lab-sampling-system/lab.html)（實驗室）
+- [https://btohri.github.io/lab-sampling-system/pick.html](https://btohri.github.io/lab-sampling-system/pick.html)（備料）
 
 ---
 
@@ -152,6 +158,6 @@ done（已完成）         記錄完成時間
 ## 注意事項
 
 - 本系統無登入機制，請自行管理網址的分發範圍
-- anon key 為前端可見，建議 Supabase RLS policy 僅開放必要操作，正式使用可依需求收緊權限
+- Publishable key 為前端可見，建議 Supabase RLS policy 僅開放必要操作，正式使用可依需求收緊權限
 - 刪除操作無法復原，請謹慎使用
 - 修改 `lab.html` 與 `pick.html` 後需重新推送至 GitHub 才會生效
