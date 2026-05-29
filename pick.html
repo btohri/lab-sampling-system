@@ -79,6 +79,39 @@
   /* ── Cards ── */
   .card-list { display: flex; flex-direction: column; gap: 6px; }
 
+  .list-tools {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .search-wrap label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .search-field {
+    width: 100%;
+    background: #0f1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    padding: 10px 12px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .search-field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .search-field::placeholder { color: var(--muted); }
+
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -176,6 +209,7 @@
     display: flex;
     gap: 8px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
   .tab {
     padding: 6px 16px;
@@ -246,6 +280,20 @@
     font-size: 11px;
     color: var(--muted);
   }
+
+  @media (max-width: 640px) {
+    header { padding: 16px; }
+    main { padding: 16px; }
+    .card {
+      height: auto;
+      min-height: 54px;
+      align-items: flex-start;
+      padding: 10px 12px;
+    }
+    .card-info { align-items: flex-start; }
+    .card-top { flex-wrap: wrap; gap: 6px; }
+    .btn-done { margin-top: 2px; }
+  }
 </style>
 </head>
 <body>
@@ -257,6 +305,13 @@
 </header>
 
 <main>
+  <div class="list-tools">
+    <div class="search-wrap">
+      <label for="item-search">料號搜尋 ITEM CODE</label>
+      <input id="item-search" class="search-field" type="search" placeholder="輸入料號快速篩選" autocomplete="off" oninput="renderList()">
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" onclick="setFilter('pending')">待備料 <span id="cnt-pending"></span></button>
     <button class="tab" onclick="setFilter('done')">已完成 <span id="cnt-done"></span></button>
@@ -311,10 +366,14 @@ async function loadData() {
 
 // ── Render ──
 function renderList() {
+  const keyword = getSearchKeyword();
   const filtered = allData.filter(r => {
     if (currentFilter === 'pending') return r.status === 'pending';
     if (currentFilter === 'done') return r.status === 'done';
     return true;
+  }).filter(r => {
+    if (!keyword) return true;
+    return String(r.item_code || '').toLowerCase().includes(keyword);
   });
 
   const pending = allData.filter(r => r.status === 'pending').length;
@@ -323,14 +382,23 @@ function renderList() {
   document.getElementById('cnt-done').textContent = done ? `(${done})` : '';
 
   const labels = { pending:'待備料清單', done:'已完成清單', all:'全部清單' };
-  document.getElementById('list-label').textContent = labels[currentFilter];
+  document.getElementById('list-label').textContent = keyword
+    ? `${labels[currentFilter]} · 搜尋 ${filtered.length} 筆`
+    : labels[currentFilter];
 
   if (!filtered.length) {
-    document.getElementById('list').innerHTML = `<div class="empty"><div class="empty-icon">${currentFilter==='pending'?'✅':'📋'}</div>${currentFilter==='pending'?'目前沒有待備料項目':'沒有記錄'}</div>`;
+    const emptyText = keyword
+      ? '找不到符合料號的項目'
+      : (currentFilter === 'pending' ? '目前沒有待備料項目' : '沒有記錄');
+    document.getElementById('list').innerHTML = `<div class="empty"><div class="empty-icon">${keyword?'🔎':(currentFilter==='pending'?'✅':'📋')}</div>${emptyText}</div>`;
     return;
   }
 
   document.getElementById('list').innerHTML = filtered.map(r => cardHTML(r)).join('');
+}
+
+function getSearchKeyword() {
+  return document.getElementById('item-search')?.value.trim().toLowerCase() || '';
 }
 
 function cardHTML(r) {
